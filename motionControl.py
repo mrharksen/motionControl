@@ -9,8 +9,7 @@ def Trap(f, a, b):
     return (f(a)+f(b))*(b-a)/2
 
 def Simpson(f,a,b):
-    return 5
-
+    return (f(a)+f(b)+4*f((a+b)/2))*(b-a)/6
 
 def lengthen(v):
     m = len(v)
@@ -63,7 +62,7 @@ def adaptiveSimpsonsQuadrature(f, a0, b0, tol0):
     a[0] = a0
     b[0] = b0
     tol[0] = tol0
-    app[0] = Trap(f, a0, b0)
+    app[0] = Simpson(f, a0, b0)
     while n > 0:
         if len(app) < 2*n:
             app = lengthen(app)
@@ -72,8 +71,8 @@ def adaptiveSimpsonsQuadrature(f, a0, b0, tol0):
             tol = lengthen(tol)
         c = (a[n-1] + b[n-1])/2
         oldapp = app[n-1]
-        app[n-1] = Trap(f, a[n-1], c)
-        app[n] = Trap(f, c, b[n-1])
+        app[n-1] = Simpson(f, a[n-1], c)
+        app[n] = Simpson(f, c, b[n-1])
         if np.abs(oldapp-app[n-1]-app[n]) < 3*tol[n-1]:
             sum += app[n-1]+app[n]
             n -= 1
@@ -83,7 +82,7 @@ def adaptiveSimpsonsQuadrature(f, a0, b0, tol0):
             a[n] = c
             tol[n-1] /=2
             tol[n] = tol[n-1]
-            n += 1
+            n += 1       
     return sum
 
 
@@ -149,6 +148,7 @@ f = lambda t: t**2
 val = adaptiveQuadrature(arc,0,0.2, 0.000001)
 print(val)
 l = adaptiveQuadrature(arc, 0, 1, 0.00001)
+l = adaptiveSimpsonsQuadrature(arc, 0, 1, 0.00001)
 s = 0.7
 tstarr = tstar(arc, s, 0.000001, 0.000001)
 tstarr2 = tstar2(arc, s, 0.0001, 0.0001)
