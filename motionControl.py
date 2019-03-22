@@ -40,7 +40,7 @@ def adaptiveQuadrature(f, a0, b0, tol0):
         oldapp = app[n-1]
         app[n-1] = Trap(f, a[n-1], c)
         app[n] = Trap(f, c, b[n-1])
-        if np.abs(oldapp-app[n-1]-app[n]) < 3*tol[n-1]:
+        if np.abs(oldapp-app[n-1]-app[n]) < 15*tol[n-1]:
             sum += app[n-1]+app[n]
             n -= 1
         else:
@@ -82,7 +82,7 @@ def adaptiveSimpsonsQuadrature(f, a0, b0, tol0):
             a[n] = c
             tol[n-1] /=2
             tol[n] = tol[n-1]
-            n += 1       
+            n += 1
     return sum
 
 
@@ -148,7 +148,9 @@ f = lambda t: t**2
 val = adaptiveQuadrature(arc,0,0.2, 0.000001)
 print(val)
 l = adaptiveQuadrature(arc, 0, 1, 0.00001)
-l = adaptiveSimpsonsQuadrature(arc, 0, 1, 0.00001)
+print(l)
+l2 = adaptiveSimpsonsQuadrature(arc, 0, 1, 0.00001)
+print(l2)
 s = 0.7
 tstarr = tstar(arc, s, 0.000001, 0.000001)
 tstarr2 = tstar2(arc, s, 0.0001, 0.0001)
