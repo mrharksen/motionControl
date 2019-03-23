@@ -12,14 +12,14 @@ def Simpson(f,a,b):
     return (f(a)+f(b)+4*f((a+b)/2))*(b-a)/6
 
 def Bezier(p1,p2,p3,p4):
-    bx = 3*(p2(0)-p1(0))
-    cx = 3*(p3(0)-p2(0))-bx
-    dx = p4(0) - p1(0) - bx - cx
-    by = 3*(p2(1)-p1(1))
-    cy = 3*(p3(1)-p2(1))-by
-    dy = p4(1) - p1(1) - by - cy
-    a1 = lambda t: p1(0) + bx*t + cx*t**2 + dx*t**3
-    a2 = lambda t: p1(1) + by*t + cy*t**2 + dy*t**3
+    bx = 3*(p2[0]-p1[0])
+    cx = 3*(p3[0]-p2[0])-bx
+    dx = p4[0] - p1[0] - bx - cx
+    by = 3*(p2[1]-p1[1])
+    cy = 3*(p3[1]-p2[1])-by
+    dy = p4[1] - p1[1] - by - cy
+    a1 = lambda t: p1[0] + bx*t + cx*t**2 + dx*t**3
+    a2 = lambda t: p1[1] + by*t + cy*t**2 + dy*t**3
     da1 = lambda t: bx + 2*cx*t + 3*dx*t**2
     da2 = lambda t: by + 2*cy*t + 3*dy*t**2
     return a1, a2, da1, da2
@@ -192,7 +192,14 @@ l = adaptiveQuadrature(arc, 0, 1, 0.00001)
 print(l)
 l2 = adaptiveSimpsonsQuadrature(arc, 0, 1, 0.00001)
 print(l2)
-
+p1 = (1,1)
+p2 = (1,3)
+p3 = (3,3)
+p4 = (2,2)
+a1, a2, da1, da2 = Bezier(p1,p2,p3,p4)
+arcBez = lambda t: np.sqrt(da1(t)**2 + da2(t)**2)
+partitionBez = equiPartition(arcBez, 4)
+plotCurvePartition(a1, a2, partitionBez)
 
 s = 0.7
 tstarr = tstar(arc, s, 0.000001, 0.000001)
