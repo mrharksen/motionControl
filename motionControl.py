@@ -114,20 +114,48 @@ def tstar2(arc, s, tollength, tolNewton):
     Arc = lambda t: adaptiveQuadrature(arc,0,t,tollength)-l*s
     return Newton(Arc,arc, s, tolNewton)
 
+def tstar3(arc, s, tollength, tolNewton):
+    l = adaptiveSimpsonsQuadrature(arc, 0, 1, tollength)
+    Arc = lambda t: adaptiveSimpsonsQuadrature(arc,0,t,tollength)-l*s
+    return Newton(Arc,arc, s, tolNewton)
+
+def equiPartition(arc, n):
+    partition = [ tstar3(arc, t, 0.0001, 0.0001) for t in np.linspace(0,1,n+1) ]
+    return partition
+
+def plotCurvePartition(x, y, partition):
+    t = np.linspace(0, 1, 500)
+    vx = [x(s) for s in t]
+    vy = [y(s) for s in t]
+    xpoint = [x(s) for s in partition]
+    ypoint = [y(s) for s in partition]
+
+    plt.figure()
+    plt.plot(vx, vy, label='P(t)')
+    plt.plot(xpoint, ypoint, 'o', label='Skiptipunktar')
+    plt.legend()
+    plt.title('Jafnskipting sléttuferilsins eftir bogalend')
+    plt.xlabel("x-ás")
+    plt.ylabel("y-ás")
+    plt.show()
+    return
+
 def updatePoint(n, x, y, point):
     point.set_data(np.array([x[n], y[n]]))
-    return point
+    return point,
 
-def animateCurve(x,y,s):
+def animateCurve(x, y, s):
     fig = plt.figure()
-    vx=x(s)
-    vy=y(s)
-    # create the first plot
+    vx=[x(t) for t in s]
+    vy=[y(t) for t in s]
     point, = plt.plot([vx[0]], [vy[0]], 'o')
-    line, = plt.plot(vx, vy, label='parametric curve')
+    line, = plt.plot(vx, vy, label='P(t)')
     plt.legend()
+    plt.title("Umstikun með einhalla falli af bogalengd")
+    plt.xlabel("x-ás")
+    plt.ylabel("y-ás")
 
-    ani=animation.FuncAnimation(fig, updatePoint, len(s), fargs=(vx, vy, point), blit=True, interval=5)
+    ani=animation.FuncAnimation(fig, updatePoint, len(s), fargs=(vx, vy, point), blit=True, interval=25)
     plt.show()
 
     return ani
@@ -151,6 +179,8 @@ l = adaptiveQuadrature(arc, 0, 1, 0.00001)
 print(l)
 l2 = adaptiveSimpsonsQuadrature(arc, 0, 1, 0.00001)
 print(l2)
+
+
 s = 0.7
 tstarr = tstar(arc, s, 0.000001, 0.000001)
 tstarr2 = tstar2(arc, s, 0.0001, 0.0001)
@@ -159,4 +189,20 @@ print(tstarr2)
 print(s*l)
 print(adaptiveQuadrature(arc,0, tstarr, 0.0001))
 print(adaptiveQuadrature(arc,0, tstarr2, 0.0001))
-animateCurve(x, y, np.linspace(0,1,100))
+a1=animateCurve(x, y, np.linspace(0,1,200))
+s2=[tstar3(arc,t,0.0001,0.0001) for t in np.linspace(0,1,200)]
+a2=animateCurve(x, y, s2)
+#s3=[tstar3(arc,np.sin(t*np.pi/2),0.0001,0.0001) for t in np.linspace(0,1,300)]
+#a3=animateCurve(x, y, s3)
+
+partition4, partition20 = equiPartition(arc, 4), equiPartition(arc, 20)
+#plotCurvePartition(x, y, partition4)
+#plotCurvePartition(x, y, partition20)
+
+#x = lambda t: 4*np.cos(-t*(2*np.pi)) + np.cos(5*t*(2*np.pi))
+#y = lambda t: 4*np.sin(-t*(2*np.pi)) + np.sin(5*t*(2*np.pi))
+#dx = lambda t: 8*np.pi*np.sin(-t*2*np.pi) - 10*np.pi*np.sin(10*t*np.pi)
+#dy = lambda t: -8*np.pi*np.cos(-t*2*np.pi) + 10*np.pi*np.cos(10*t*np.pi)
+#arc = lambda t: np.sqrt(dx(t)**2 + dy(t)**2)
+#s4=[tstar3(arc,t,0.0001,0.0001) for t in np.linspace(0,1,200)]
+#a4=animateCurve(x, y, s4)
