@@ -11,6 +11,19 @@ def Trap(f, a, b):
 def Simpson(f,a,b):
     return (f(a)+f(b)+4*f((a+b)/2))*(b-a)/6
 
+def Bezier(p1,p2,p3,p4):
+    bx = 3*(p2(0)-p1(0))
+    cx = 3*(p3(0)-p2(0))-bx
+    dx = p4(0) - p1(0) - bx - cx
+    by = 3*(p2(1)-p1(1))
+    cy = 3*(p3(1)-p2(1))-by
+    dy = p4(1) - p1(1) - by - cy
+    a1 = lambda t: p1(0) + bx*t + cx*t**2 + dx*t**3
+    a2 = lambda t: p1(1) + by*t + cy*t**2 + dy*t**3
+    da1 = lambda t: bx + 2*cx*t + 3*dx*t**2
+    da2 = lambda t: by + 2*cy*t + 3*dy*t**2
+    return a1, a2, da1, da2
+
 def lengthen(v):
     m = len(v)
     newv = np.zeros(2*m)
