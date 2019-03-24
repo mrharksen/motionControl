@@ -304,6 +304,11 @@ st2 = parametersFromProgressCurve(arc,ct2,150)
 anit2 = animateCurve(x,y,st2, "Ferill $P$ umstikaður af $C(s)=s^2$.")
 anit2.save("anit2.mp4", writer="ffmpeg", fps=30)
 
+cSin1 = lambda t: np.sin(t*np.pi/2)
+sSin1 = parametersFromProgressCurve(arc,cSin1,150)
+aSin1 = animateCurve(x,y,sSin1, "Ferill $P$ umstikaður af $C(s)=\\sin(s\\pi /2)$.")
+aSin1.save("anit2.mp4", writer="ffmpeg", fps=30)
+
 cSin = lambda t: 1/2+1/2*np.sin((2*t-1)*np.pi/2)
 sSin = parametersFromProgressCurve(arc,cSin,150)
 aSin = animateCurve(x,y,sSin, "Ferill $P$ umstikaður af $C(s)=\\frac{1}{2}+\\frac{1}{2}\\sin((2s-1)\\pi/2 ) $.")
