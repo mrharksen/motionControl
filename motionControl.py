@@ -168,8 +168,8 @@ def updatePoint(n, x, y, point):
 
 def animateCurve(x, y, s):
     fig = plt.figure()
-    vx=[x(t) for t in s]
-    vy=[y(t) for t in s]
+    vx = [x(t) for t in s]
+    vy = [y(t) for t in s]
     point, = plt.plot([vx[0]], [vy[0]], 'o')
     line, = plt.plot(vx, vy, label='P(t)')
     plt.legend()
@@ -177,15 +177,13 @@ def animateCurve(x, y, s):
     plt.xlabel("x-ás")
     plt.ylabel("y-ás")
 
-    ani=animation.FuncAnimation(fig, updatePoint, len(s), fargs=(vx, vy, point), blit=True , interval=25)
-    ani.save('animati.mp4', writer="ffmpeg", fps=25)
+    ani = animation.FuncAnimation(fig, updatePoint, len(s), fargs=(vx, vy, point), blit=True , interval=25)
     return ani
 
 def timeFunction(func, *args, **kwargs):
     def wrapped():
         return func(*args)
     return timeit.timeit(wrapped, **kwargs)
-
 
 
 tol = 0.0001
