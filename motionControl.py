@@ -156,6 +156,7 @@ def plotCurvePartition(x, y, partition):
     plt.plot(vx, vy, label='P(t)')
     plt.plot(xpoint, ypoint, 'o', label='Skiptipunktar')
     plt.legend()
+    plt.axis("equal")
     plt.title('Jafnskipting sléttuferilsins eftir bogalend')
     plt.xlabel("x-ás")
     plt.ylabel("y-ás")
@@ -173,12 +174,14 @@ def animateCurve(x, y, s):
     point, = plt.plot([vx[0]], [vy[0]], 'o')
     line, = plt.plot(vx, vy, label='P(t)')
     plt.legend()
+    plt.axis("equal")
     plt.title("Umstikun með einhalla falli af bogalengd")
     plt.xlabel("x-ás")
     plt.ylabel("y-ás")
 
     ani = animation.FuncAnimation(fig, updatePoint, len(s), fargs=(vx, vy, point), blit=True , interval=25)
     return ani
+
 
 def timeFunction(func, *args, **kwargs):
     def wrapped():
@@ -234,20 +237,29 @@ print(timeFunction(tstar2, arc, s, tol, tol, number=10))
 print("Time of computing t*3 with AQ Simpson and Newtons method:")
 print(timeFunction(tstar3, arc, 0.5, tol, tol, number=10))
 
-
-a1 = animateCurve(x, y, np.linspace(0,1,200))
-a1.save("a1.mp4", writer="ffmpeg", fps=30)
-
-
 p1 = (0,0); p2 = (-1,1); p3 = (0,2); p4 = (0,1)
 a1, a2, da1, da2 = Bezier(p1,p2,p3,p4)
 arcBezier =  lambda t: np.sqrt(da1(t)**2 + da2(t)**2)
 lBezSimp = adaptiveSimpsonsQuadrature(arcBezier, 0, 1, TOL)
 print("The length of the Bézier curve is: "+ str(lBezSimp))
 
+plotCurvePartition(a1, a2, equiPartition3(arcBezier, 4, tol))
+plotCurvePartition(a1, a2, equiPartition3(arcBezier, 20, tol))
 
 
+ani1 = animateCurve(x, y, np.linspace(0,1,200))
+ani1.save("ani1.mp4", writer="ffmpeg", fps=30)
 
+sVec = [tstar3(arc,t,tol,tol) for t in np.linspace(0,1,200)]
+ani2 = animateCurve(x, y, sVec)
+ani2.save("ani2.mp4", writer="ffmpeg", fps=30)
+
+aniBez1 = animateCurve(a1, a2, np.linspace(0,1,200))
+aniBez1.save("aniBez1.mp4", writer="ffmpeg", fps=30)
+
+sVecBezier = [tstar3(arcBezier,t,tol,tol) for t in np.linspace(0,1,200)]
+aniBez2 = animateCurve(a1, a2, sVecBezier)
+aniBez2.save("aniBez2.mp4", writer="ffmpeg", fps=30)
 
 #f = lambda t: t**2
 #val = adaptiveQuadrature(arc,0,0.2, 0.000001)
