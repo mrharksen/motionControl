@@ -177,9 +177,8 @@ def animateCurve(x, y, s):
     plt.xlabel("x-ás")
     plt.ylabel("y-ás")
 
-    ani=animation.FuncAnimation(fig, updatePoint, len(s), fargs=(vx, vy, point), blit=True, interval=25)
-    ani.save('/tmp/animation.gif', writer='imagemagick', fps=30)
-
+    ani=animation.FuncAnimation(fig, updatePoint, len(s), fargs=(vx, vy, point), blit=True , interval=25)
+    ani.save('animati.mp4', writer="ffmpeg", fps=25)
     return ani
 
 def timeFunction(func, *args, **kwargs):
@@ -237,7 +236,9 @@ print(timeFunction(tstar2, arc, s, tol, tol, number=10))
 print("Time of computing t*3 with AQ Simpson and Newtons method:")
 print(timeFunction(tstar3, arc, 0.5, tol, tol, number=10))
 
-a1=animateCurve(x, y, np.linspace(0,1,200))
+
+a1 = animateCurve(x, y, np.linspace(0,1,200))
+a1.save("a1.mp4", writer="ffmpeg", fps=30)
 
 
 p1 = (0,0); p2 = (-1,1); p3 = (0,2); p4 = (0,1)
