@@ -163,23 +163,29 @@ def plotCurvePartition(x, y, partition):
     plt.show()
     return
 
-def updatePoint(n, x, y, point):
-    point.set_data(np.array([x[n], y[n]]))
+
+
+def updatePoint(n, x, y, s, point):
+    point.set_data(np.array([x(s[n]), y(s[n])]))
     return point,
 
 def animateCurve(x, y, s):
     fig = plt.figure()
-    vx = [x(t) for t in s]
-    vy = [y(t) for t in s]
-    point, = plt.plot([vx[0]], [vy[0]], 'o')
+    # create the underlying path
+    t = np.linspace(0, 1, 500)
+    vx, vy = x(t), y(t)
     line, = plt.plot(vx, vy, label='P(t)')
+    # plot the first point
+    point, = plt.plot([vx[0]], [vy[0]], 'o')
+    
     plt.legend()
-    plt.axis("equal")
     plt.title("Umstikun með einhalla falli af bogalengd")
     plt.xlabel("x-ás")
     plt.ylabel("y-ás")
+    plt.axis('equal')
 
-    ani = animation.FuncAnimation(fig, updatePoint, len(s), fargs=(vx, vy, point), blit=True , interval=25)
+    ani=animation.FuncAnimation(fig, updatePoint, len(s), fargs=(x, y, s, point), blit=True, interval=25)
+
     return ani
 
 
