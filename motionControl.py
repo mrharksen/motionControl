@@ -188,6 +188,9 @@ def timeFunction(func, *args, **kwargs):
         return func(*args)
     return timeit.timeit(wrapped, **kwargs)
 
+def parametersFromProgressCurve(arc, c, n):
+    return [tstar3(arc,c(t),tol,tol) for t in np.linspace(0,1,n)]
+
 
 tol = 0.0001
 TOL = 0.000001
@@ -233,7 +236,6 @@ print(timeFunction(tstar, arc, s, tol, tol, number=10))
 print("Time of computing t*2 with AQ trapizoid and Newtons method:")
 print(timeFunction(tstar2, arc, s, tol, tol, number=10))
 
-
 print("Time of computing t*3 with AQ Simpson and Newtons method:")
 print(timeFunction(tstar3, arc, 0.5, tol, tol, number=10))
 
@@ -245,7 +247,6 @@ print("The length of the Bézier curve is: "+ str(lBezSimp))
 
 plotCurvePartition(a1, a2, equiPartition3(arcBezier, 4, tol))
 plotCurvePartition(a1, a2, equiPartition3(arcBezier, 20, tol))
-
 
 ani1 = animateCurve(x, y, np.linspace(0,1,200))
 ani1.save("ani1.mp4", writer="ffmpeg", fps=30)
@@ -261,38 +262,27 @@ sVecBezier = [tstar3(arcBezier,t,tol,tol) for t in np.linspace(0,1,200)]
 aniBez2 = animateCurve(a1, a2, sVecBezier)
 aniBez2.save("aniBez2.mp4", writer="ffmpeg", fps=30)
 
-#f = lambda t: t**2
-#val = adaptiveQuadrature(arc,0,0.2, 0.000001)
-#print(val)
-#l = adaptiveQuadrature(arc, 0, 1, 0.00001)
-#print(l)
-#l2 = adaptiveSimpsonsQuadrature(arc, 0, 1, 0.00001)
-#print(l2)
 
+ct1d3 = lambda t: np.power(t,1/3)
+st1d3 = parametersFromProgressCurve(arc,ct1d3,300)
+anit1d3 = animateCurve(x,y,st1d3)
+anit1d3.save("anit1d3.mp4", writer="ffmpeg", fps=30)
 
+ct2 = lambda t: np.power(t,2)
+st2 = parametersFromProgressCurve(arc,ct2,150)
+anit2 = animateCurve(x,y,st2)
+anit2.save("anit2.mp4", writer="ffmpeg", fps=30)
 
-#print(s*l)
-#print(adaptiveQuadrature(arc,0, tstarr, 0.0001))
-#print(adaptiveQuadrature(arc,0, tstarr2, 0.0001))
-##a1=animateCurve(x, y, np.linspace(0,1,200))
-#s2=[tstar3(arc,t,0.0001,0.0001) for t in np.linspace(0,1,200)]
-#a2=animateCurve(x, y, s2)
-#s3=[tstar3(arc,np.sin(t*np.pi/2),0.0001,0.0001) for t in np.linspace(0,1,300)]
-#a3=animateCurve(x, y, s3)
+cSin = lambda t: np.sin(t*np.pi/2)
+sSin = parametersFromProgressCurve(arc,cSin,150)
+aSin = animateCurve(x,y,sSin)
+aSin.save("aniSin.mp4", writer="ffmpeg", fps=30)
 
+Hx = lambda t: 16*(np.sin(2*np.pi*t))**3
+Hy = lambda t: 13*np.cos(2*np.pi*t)-5*np.cos(4*np.pi*t)-2*np.cos(6*np.pi*t)-np.cos(8*np.pi*t)
+Hdx = lambda t: 48*((np.sin(2*np.pi*t))**2)*np.cos(2*np.pi*t)
+Hdy = lambda t: -13*np.sin(2*np.pi*t)+10*np.sin(4*np.pi*t)+6*np.sin(6*np.pi*t)+4*np.cos(8*np.pi*t)
+Harc = lambda t: np.sqrt(Hdx(2*np.pi*t)**2 + Hdy(2*np.pi*t)**2)
 
-#plotCurvePartition(a1, a2, partitionBez)
-
-
-
-
-
-
-
-#x = lambda t: 4*np.cos(-t*(2*np.pi)) + np.cos(5*t*(2*np.pi))
-#y = lambda t: 4*np.sin(-t*(2*np.pi)) + np.sin(5*t*(2*np.pi))
-#dx = lambda t: 8*np.pi*np.sin(-t*2*np.pi) - 10*np.pi*np.sin(10*t*np.pi)
-#dy = lambda t: -8*np.pi*np.cos(-t*2*np.pi) + 10*np.pi*np.cos(10*t*np.pi)
-#arc = lambda t: np.sqrt(dx(t)**2 + dy(t)**2)
-#s4=[tstar3(arc,t,0.0001,0.0001) for t in np.linspace(0,1,200)]
-#a4=animateCurve(x, y, s4)
+heart = animateCurve(Hx, Hy, np.linspace(0,1,200))
+heart.save("heart.mp4", writer="ffmpeg", fps=30)
