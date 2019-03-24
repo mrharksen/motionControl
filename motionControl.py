@@ -31,7 +31,6 @@ def lengthen(v):
         newv[i]=v[i]
     return newv
 
-
 def adaptiveQuadrature(f, a0, b0, tol0):
     sum = 0
     n = 1
@@ -98,8 +97,11 @@ def adaptiveSimpsonsQuadrature(f, a0, b0, tol0):
             n += 1
     return sum
 
-
 def binary(f, a, b, tol):
+    if np.abs(f(a)) < tol:
+        return a
+    if np.abs(f(b)) < tol:
+        return b
     while (b-a)/2 > tol:
         c = (a+b)/2
         if f(c) == 0:
@@ -116,24 +118,31 @@ def Newton(f,df,x0,tol):
         x -= f(x)/df(x)
     return x
 
-
 def tstar(arc, s, tollength, tolbinary):
     l = adaptiveQuadrature(arc, 0, 1, tollength)
     Arc = lambda t: adaptiveQuadrature(arc,0,t,tollength)-l*s
     return binary(Arc, 0, 1, tolbinary)
+
+def equiPartition(arc, n, tol):
+    partition = [ tstar(arc, t, tol, tol) for t in np.linspace(0,1,n+1) ]
+    return partition
 
 def tstar2(arc, s, tollength, tolNewton):
     l = adaptiveQuadrature(arc, 0, 1, tollength)
     Arc = lambda t: adaptiveQuadrature(arc,0,t,tollength)-l*s
     return Newton(Arc,arc, s, tolNewton)
 
+def equiPartition2(arc, n, tol):
+    partition = [ tstar2(arc, t, tol, tol) for t in np.linspace(0,1,n+1) ]
+    return partition
+
 def tstar3(arc, s, tollength, tolNewton):
     l = adaptiveSimpsonsQuadrature(arc, 0, 1, tollength)
     Arc = lambda t: adaptiveSimpsonsQuadrature(arc,0,t,tollength)-l*s
     return Newton(Arc,arc, s, tolNewton)
 
-def equiPartition(arc, n):
-    partition = [ tstar3(arc, t, 0.0001, 0.0001) for t in np.linspace(0,1,n+1) ]
+def equiPartition3(arc, n, tol):
+    partition = [ tstar3(arc, t, tol, tol) for t in np.linspace(0,1,n+1) ]
     return partition
 
 def plotCurvePartition(x, y, partition):
@@ -169,7 +178,7 @@ def animateCurve(x, y, s):
     plt.ylabel("y-ás")
 
     ani=animation.FuncAnimation(fig, updatePoint, len(s), fargs=(vx, vy, point), blit=True, interval=25)
-    plt.show()
+    ani.save('/tmp/animation.gif', writer='imagemagick', fps=30)
 
     return ani
 
@@ -179,45 +188,95 @@ def timeFunction(func, *args, **kwargs):
     return timeit.timeit(wrapped, **kwargs)
 
 
+
+tol = 0.0001
+TOL = 0.000001
+
 x = lambda t: 0.5 + 0.3*t + 3.9*t**2 - 4.7*t**3
 y = lambda t: 1.5 + 0.3*t + 0.9*t**2 - 2.7*t**3
 dx = lambda t: 0.3 + 7.8*t - 14.1*t**2
 dy = lambda t: 0.3 + 1.8*t - 8.1*t**2
-c = lambda t: t
 arc = lambda t: np.sqrt(dx(t)**2 + dy(t)**2)
-f = lambda t: t**2
-val = adaptiveQuadrature(arc,0,0.2, 0.000001)
-print(val)
-l = adaptiveQuadrature(arc, 0, 1, 0.00001)
-print(l)
-l2 = adaptiveSimpsonsQuadrature(arc, 0, 1, 0.00001)
-print(l2)
-p1 = (1,1)
-p2 = (1,3)
-p3 = (3,3)
-p4 = (2,2)
-a1, a2, da1, da2 = Bezier(p1,p2,p3,p4)
-arcBez = lambda t: np.sqrt(da1(t)**2 + da2(t)**2)
-partitionBez = equiPartition(arcBez, 4)
-plotCurvePartition(a1, a2, partitionBez)
+lTrap = adaptiveQuadrature(arc, 0, 1, TOL)
+lSimp = adaptiveSimpsonsQuadrature(arc, 0, 1, TOL)
+print("The length of the given curve is:")
+print("Evaluated with the trapizoid method: "+str(lTrap))
+print("Evaluated with the Simpsins method: "+str(lSimp))
+
 
 s = 0.7
-tstarr = tstar(arc, s, 0.000001, 0.000001)
-tstarr2 = tstar2(arc, s, 0.0001, 0.0001)
-print(tstarr)
-print(tstarr2)
-print(s*l)
-print(adaptiveQuadrature(arc,0, tstarr, 0.0001))
-print(adaptiveQuadrature(arc,0, tstarr2, 0.0001))
+tstarr = tstar(arc, s, TOL, TOL)
+print("The value of t*("+ str(s) + ") is: "+str(tstarr))
+
+
+plotCurvePartition(x, y, equiPartition(arc, 4, tol))
+plotCurvePartition(x, y, equiPartition(arc, 20, tol))
+
+
+tstarr2 = tstar2(arc, s, TOL, TOL)
+print("The value of t*("+ str(s) + ") computed by Newton's method is: "+str(tstarr))
+
+plotCurvePartition(x, y, equiPartition2(arc, 4, tol))
+plotCurvePartition(x, y, equiPartition2(arc, 20, tol))
+
+
+tstarr3 = tstar3(arc, s, TOL, TOL)
+print("The value of t*("+ str(s) + ") computed by Newton's method is: "+str(tstarr))
+
+plotCurvePartition(x, y, equiPartition3(arc, 4, tol))
+plotCurvePartition(x, y, equiPartition3(arc, 20, tol))
+
+s=0.5
+print("Time of computing t* with AQ trapizoid and bisection method:")
+print(timeFunction(tstar, arc, s, tol, tol, number=10))
+
+print("Time of computing t*2 with AQ trapizoid and Newtons method:")
+print(timeFunction(tstar2, arc, s, tol, tol, number=10))
+
+
+print("Time of computing t*3 with AQ Simpson and Newtons method:")
+print(timeFunction(tstar3, arc, 0.5, tol, tol, number=10))
+
 a1=animateCurve(x, y, np.linspace(0,1,200))
-s2=[tstar3(arc,t,0.0001,0.0001) for t in np.linspace(0,1,200)]
-a2=animateCurve(x, y, s2)
+
+
+p1 = (0,0); p2 = (-1,1); p3 = (0,2); p4 = (0,1)
+a1, a2, da1, da2 = Bezier(p1,p2,p3,p4)
+arcBezier =  lambda t: np.sqrt(da1(t)**2 + da2(t)**2)
+lBezSimp = adaptiveSimpsonsQuadrature(arcBezier, 0, 1, TOL)
+print("The length of the Bézier curve is: "+ str(lBezSimp))
+
+
+
+
+
+#f = lambda t: t**2
+#val = adaptiveQuadrature(arc,0,0.2, 0.000001)
+#print(val)
+#l = adaptiveQuadrature(arc, 0, 1, 0.00001)
+#print(l)
+#l2 = adaptiveSimpsonsQuadrature(arc, 0, 1, 0.00001)
+#print(l2)
+
+
+
+#print(s*l)
+#print(adaptiveQuadrature(arc,0, tstarr, 0.0001))
+#print(adaptiveQuadrature(arc,0, tstarr2, 0.0001))
+##a1=animateCurve(x, y, np.linspace(0,1,200))
+#s2=[tstar3(arc,t,0.0001,0.0001) for t in np.linspace(0,1,200)]
+#a2=animateCurve(x, y, s2)
 #s3=[tstar3(arc,np.sin(t*np.pi/2),0.0001,0.0001) for t in np.linspace(0,1,300)]
 #a3=animateCurve(x, y, s3)
 
-partition4, partition20 = equiPartition(arc, 4), equiPartition(arc, 20)
-#plotCurvePartition(x, y, partition4)
-#plotCurvePartition(x, y, partition20)
+
+#plotCurvePartition(a1, a2, partitionBez)
+
+
+
+
+
+
 
 #x = lambda t: 4*np.cos(-t*(2*np.pi)) + np.cos(5*t*(2*np.pi))
 #y = lambda t: 4*np.sin(-t*(2*np.pi)) + np.sin(5*t*(2*np.pi))
