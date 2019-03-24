@@ -248,14 +248,14 @@ plotCurvePartition(x, y, equiPartition(arc, 20, tol), "Feril $P$ skipt í 20 í 
 
 
 tstarr2 = tstar2(arc, s, TOL, TOL)
-print("The value of t*("+ str(s) + ") computed by Newton's method is: "+str(tstarr))
+print("The value of t*("+ str(s) + ") computed by Newton's method is: "+str(tstarr2))
 
 plotCurvePartition(x, y, equiPartition2(arc, 4, tol), "Feril $P$ skipt í 4 hluta með aðferð Newtons.")
 plotCurvePartition(x, y, equiPartition2(arc, 20, tol), "Feril $P$ skipt í 20 hluta með aðferð Newtons.")
 
 
 tstarr3 = tstar3(arc, s, TOL, TOL)
-print("The value of t*("+ str(s) + ") computed by Newton's method is: "+str(tstarr))
+print("The value of t*("+ str(s) + ") computed by Newton's method is: "+str(tstarr3))
 
 plotCurvePartition(x, y, equiPartition3(arc, 4, tol), "Feril $P$ skipt í 4 hluta með aðferð Newtons.")
 plotCurvePartition(x, y, equiPartition3(arc, 20, tol), "Feril $P$ skipt í 20 hluta með aðferð Newtons.")
