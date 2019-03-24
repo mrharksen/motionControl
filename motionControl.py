@@ -158,7 +158,7 @@ def equiPartition2(arc, n, tol):
     partition = [ tstar2(arc, t, tol, tol) for t in np.linspace(0,1,n+1) ]
     return partition
 
-'''Finds the value of tstar via Newton with Simpson AQ integration''''
+'''Finds the value of tstar via Newton with Simpson AQ integration'''
 def tstar3(arc, s, tollength, tolNewton):
     l = adaptiveSimpsonsQuadrature(arc, 0, 1, tollength)
     Arc = lambda t: adaptiveSimpsonsQuadrature(arc,0,t,tollength)-l*s
@@ -310,6 +310,11 @@ cSin = lambda t: np.sin(t*np.pi/2)
 sSin = parametersFromProgressCurve(arc,cSin,150)
 aSin = animateCurve(x,y,sSin)
 aSin.save("aniSin.mp4", writer="ffmpeg", fps=30)
+
+cSin2 = lambda t: 0.5 + 0.5*np.sin((2*t-1)*np.pi/2)
+sSin2 = parametersFromProgressCurve(arc,cSin2,150)
+aSin2 = animateCurve(x,y,sSin2)
+aSin2.save("aniSin2.mp4", writer="ffmpeg", fps=30)
 
 Hx = lambda t: 16*(np.sin(2*np.pi*t))**3
 Hy = lambda t: 13*np.cos(2*np.pi*t)-5*np.cos(4*np.pi*t)-2*np.cos(6*np.pi*t)-np.cos(8*np.pi*t)
