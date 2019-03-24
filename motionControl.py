@@ -178,9 +178,8 @@ def plotCurvePartition(x, y, partition, label):
     ypoint = [y(s) for s in partition]
 
     plt.figure()
-    plt.plot(vx, vy, label='P(t)')
-    plt.plot(xpoint, ypoint, 'o', label='Skiptipunktar')
-    plt.legend()
+    plt.plot(vx, vy)
+    plt.plot(xpoint, ypoint, 'o')
     plt.axis("equal")
     plt.title(label)
     plt.xlabel("x-ás")
@@ -200,11 +199,10 @@ def animateCurve(x, y, s, label):
     # create the underlying path
     t = np.linspace(0, 1, 500)
     vx, vy = x(t), y(t)
-    line, = plt.plot(vx, vy, label='P(t)')
+    line, = plt.plot(vx, vy)
     # plot the first point
     point, = plt.plot([vx[0]], [vy[0]], 'o')
 
-    plt.legend()
     plt.title(label)
     plt.xlabel("x-ás")
     plt.ylabel("y-ás")
@@ -281,7 +279,7 @@ print("The length of the Bézier curve is: "+ str(lBezSimp))
 plotCurvePartition(a1, a2, equiPartition3(arcBezier, 4, tol),"Bézier ferlinum skipt í 4 hluta.")
 plotCurvePartition(a1, a2, equiPartition3(arcBezier, 20, tol), "Bézier ferlinum skipt í 20 hluta.")
 
-ani1 = animateCurve(x, y, np.linspace(0,1,200), "Ferillinn $P$ stilaður af $t$.")
+ani1 = animateCurve(x, y, np.linspace(0,1,200), "Ferillinn $P$ stikaður af $t$.")
 ani1.save("ani1.mp4", writer="ffmpeg", fps=30)
 
 sVec = [tstar3(arc,t,tol,tol) for t in np.linspace(0,1,200)]
